@@ -5,6 +5,8 @@ plugins {
     id("io.micronaut.application") version "4.6.2"
     id("com.gradleup.shadow") version "8.3.9"
     id("io.micronaut.aot") version "4.6.2"
+    id("io.micronaut.library") version "4.6.2"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.9.25"
 }
 
 version = "0.1"
@@ -18,10 +20,17 @@ repositories {
 dependencies {
     ksp("io.micronaut:micronaut-http-validation")
     ksp("io.micronaut.serde:micronaut-serde-processor")
+    ksp("io.micronaut.validation:micronaut-validation-processor")
+    implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("jakarta.validation:jakarta.validation-api")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    runtimeOnly("mysql:mysql-connector-java")
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")

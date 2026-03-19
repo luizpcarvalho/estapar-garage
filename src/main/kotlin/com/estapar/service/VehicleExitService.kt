@@ -13,7 +13,6 @@ import io.micronaut.transaction.annotation.Transactional
 import jakarta.inject.Singleton
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -44,7 +43,7 @@ open class VehicleExitService (
 
         val amount = pricingService.calculate(session.entryTime, exitTime, basePrice, session.capacityModifier)
 
-        val updatedGarageSector = session.garageSector?.copy(currentCapacity = session.garageSector.currentCapacity - 1)
+        val updatedGarageSector = session.garageSector?.copy(currentOccupation = session.garageSector.currentOccupation - 1)
         sectorRepo.update(updatedGarageSector)
         logger.info("Garage sector updated: $updatedGarageSector")
 

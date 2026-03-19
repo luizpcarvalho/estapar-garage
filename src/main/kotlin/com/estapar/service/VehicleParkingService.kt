@@ -38,9 +38,9 @@ open class VehicleParkingService (
         val garageSector = sectorRepo.findBySector(sectorSpot.sector)
             ?: return HttpResponse.badRequest(WebhookResponse(error = "Garage sector not found"))
 
-        val maxCapacity = garageSector.maxCapacity ?: garageSector.currentCapacity
+        val maxCapacity = garageSector.maxCapacity ?: garageSector.currentOccupation
 
-        if (maxCapacity == garageSector.currentCapacity) {
+        if (maxCapacity == garageSector.currentOccupation) {
             val updatedSession = session.copy(status = SessionStatus.CANCELLED)
             sessionRepo.update(updatedSession)
             logger.warn("No vacancy available. Parking session cancelled")
@@ -58,14 +58,14 @@ open class VehicleParkingService (
         spotRepo.update(updatedSectorSpot)
         logger.info("Sector spot updated: $updatedSectorSpot")
 
-        val updatedGarageSector = garageSector.copy(currentCapacity = garageSector.currentCapacity + 1)
+        val updatedGarageSector = garageSector.copy(currentOccupation = garageSector.currentOccupation + 1)
         sectorRepo.update(updatedGarageSector)
         logger.info("Garage sector updated: $updatedGarageSector")
 
         val updatedSession = session.copy(
             garageSector = updatedGarageSector,
             sectorSpot = updatedSectorSpot,
-            capacityModifier = calculateCapacityModifier(maxCapacity, garageSector.currentCapacity)
+            capacityModifier = calculateCapacityModifier(maxCapacity, garageSector.currentOccupation)
         )
         sessionRepo.update(updatedSession)
         logger.info("Parking session updated: $updatedSession")

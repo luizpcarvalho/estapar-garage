@@ -20,8 +20,8 @@ data class GarageSector(
     @Column(name = "max_capacity")
     val maxCapacity: Int? = null,
 
-    @Column(name = "current_capacity", nullable = false)
-    val currentCapacity: Int = 0,
+    @Column(name = "current_occupation", nullable = false)
+    val currentOccupation: Int = 0,
 
     @Column(name = "open_hour", nullable = false)
     val openHour: String? = null,
@@ -32,4 +32,4 @@ data class GarageSector(
     @Column(name = "duration_limit_minutes", nullable = false)
     val durationLimitMinutes: Int? = null,
 
-)
+    )

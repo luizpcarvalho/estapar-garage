@@ -11,25 +11,25 @@ data class GarageSector(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
+    @Column(name = "sector", nullable = false)
     val sector: String,
 
-    @Column(name = "base_price")
-    val basePrice: BigDecimal? = null,
+    @Column(name = "base_price", nullable = false)
+    val basePrice: BigDecimal,
 
-    @Column(name = "max_capacity")
-    val maxCapacity: Int? = null,
+    @Column(name = "max_capacity", nullable = false)
+    val maxCapacity: Int,
 
     @Column(name = "current_occupation", nullable = false)
     val currentOccupation: Int = 0,
 
-    @Column(name = "open_hour", nullable = false)
+    @Column(name = "open_hour")
     val openHour: String? = null,
 
-    @Column(name = "close_hour", nullable = false)
+    @Column(name = "close_hour")
     val closeHour: String? = null,
 
-    @Column(name = "duration_limit_minutes", nullable = false)
+    @Column(name = "duration_limit_minutes")
     val durationLimitMinutes: Int? = null,
 
     )

@@ -8,7 +8,7 @@ import io.micronaut.serde.annotation.Serdeable
 @Introspected
 data class ParkingRequest(
     @field:JsonProperty("license_plate")
-    val licensePlate: String?,
+    val licensePlate: String,
     @field:JsonProperty("lat")
     val lat: Double,
     @field:JsonProperty("lng")

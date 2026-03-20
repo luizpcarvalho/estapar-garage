@@ -34,7 +34,9 @@ dependencies {
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+    testImplementation("com.h2database:h2")
     testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("io.mockk:mockk:1.13.8")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

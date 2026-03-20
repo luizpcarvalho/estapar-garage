@@ -1,6 +1,7 @@
 package com.estapar.service
 
 import com.estapar.dto.ExitRequest
+import com.estapar.dto.ExitResponse
 import com.estapar.dto.WebhookResponse
 import com.estapar.entity.Payment
 import com.estapar.entity.SessionStatus
@@ -13,9 +14,9 @@ import io.micronaut.transaction.annotation.Transactional
 import jakarta.inject.Singleton
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeParseException
 
 @Singleton
 open class VehicleExitService (
@@ -33,18 +34,23 @@ open class VehicleExitService (
 
         logger.info("Started processing vehicle exit")
 
-        val licensePlate = exitRequest.licensePlate ?: ""
+        val licensePlate = exitRequest.licensePlate
 
         val session = sessionRepo.findByLicensePlateAndStatus(licensePlate, SessionStatus.ACTIVE)
             ?: return HttpResponse.badRequest(WebhookResponse(error = "Vehicle is not parked"))
 
-        val exitTime = LocalDateTime.parse(exitRequest.exitTime ?: "").toInstant(ZoneOffset.UTC)
+        val exitTime = try {
+            LocalDateTime.parse(exitRequest.exitTime).toInstant(ZoneOffset.UTC)
+        } catch (e: DateTimeParseException) {
+            logger.warn("Could not parse date: ${exitRequest.exitTime}", e)
+            return HttpResponse.badRequest(WebhookResponse(error = "Invalid exit time format"))
+        }
 
         val basePrice = session.garageSector?.basePrice ?: BigDecimal(0)
 
         val amount = pricingService.calculate(session.entryTime, exitTime, basePrice, session.capacityModifier)
 
-        val updatedGarageSector = session.garageSector?.copy(currentCapacity = session.garageSector.currentCapacity - 1)
+        val updatedGarageSector = session.garageSector?.copy(currentOccupation = session.garageSector.currentOccupation - 1)
         sectorRepo.update(updatedGarageSector)
         logger.info("Garage sector updated: $updatedGarageSector")
 
@@ -68,7 +74,7 @@ open class VehicleExitService (
 
         logger.info("Finished processing vehicle exit")
 
-        return HttpResponse.ok(WebhookResponse(data = listOf(licensePlate, exitTime, amount)))
+        return HttpResponse.ok(WebhookResponse(data = listOf(ExitResponse(licensePlate, exitTime, amount))))
     }
 
 }

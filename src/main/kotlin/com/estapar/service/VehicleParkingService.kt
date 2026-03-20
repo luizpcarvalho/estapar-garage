@@ -27,7 +27,7 @@ open class VehicleParkingService (
 
         logger.info("Started processing vehicle parking")
 
-        val licensePlate = request.licensePlate ?: ""
+        val licensePlate = request.licensePlate
 
         val session = sessionRepo.findByLicensePlateAndStatus(licensePlate, SessionStatus.ACTIVE)
             ?: return HttpResponse.badRequest(WebhookResponse(error = "There is no parking session for the vehicle"))
@@ -38,9 +38,9 @@ open class VehicleParkingService (
         val garageSector = sectorRepo.findBySector(sectorSpot.sector)
             ?: return HttpResponse.badRequest(WebhookResponse(error = "Garage sector not found"))
 
-        val maxCapacity = garageSector.maxCapacity ?: garageSector.currentCapacity
+        val maxCapacity = garageSector.maxCapacity
 
-        if (maxCapacity == garageSector.currentCapacity) {
+        if (maxCapacity == garageSector.currentOccupation) {
             val updatedSession = session.copy(status = SessionStatus.CANCELLED)
             sessionRepo.update(updatedSession)
             logger.warn("No vacancy available. Parking session cancelled")
@@ -58,14 +58,14 @@ open class VehicleParkingService (
         spotRepo.update(updatedSectorSpot)
         logger.info("Sector spot updated: $updatedSectorSpot")
 
-        val updatedGarageSector = garageSector.copy(currentCapacity = garageSector.currentCapacity + 1)
+        val updatedGarageSector = garageSector.copy(currentOccupation = garageSector.currentOccupation + 1)
         sectorRepo.update(updatedGarageSector)
         logger.info("Garage sector updated: $updatedGarageSector")
 
         val updatedSession = session.copy(
             garageSector = updatedGarageSector,
             sectorSpot = updatedSectorSpot,
-            capacityModifier = calculateCapacityModifier(maxCapacity, garageSector.currentCapacity)
+            capacityModifier = calculateCapacityModifier(maxCapacity, garageSector.currentOccupation)
         )
         sessionRepo.update(updatedSession)
         logger.info("Parking session updated: $updatedSession")
@@ -78,11 +78,11 @@ open class VehicleParkingService (
 
     }
 
-    private fun calculateCapacityModifier(maxCapacity: Int, currentCapacity: Int): Int? {
-        return if((maxCapacity * 0.25) > currentCapacity) { 10 }
+    private fun calculateCapacityModifier(maxCapacity: Int, currentCapacity: Int): Double? {
+        return if((maxCapacity * 0.25) > currentCapacity) { 0.1 }
         else if ((maxCapacity * 0.5) > currentCapacity) { null }
-        else if ((maxCapacity * 0.75) > currentCapacity) { 110 }
-        else { 125 }
+        else if ((maxCapacity * 0.75) > currentCapacity) { 1.1 }
+        else { 1.25 }
     }
 
 }

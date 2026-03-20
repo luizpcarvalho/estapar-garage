@@ -29,7 +29,7 @@ data class ParkingSession(
     val exitTime: Instant? = null,
 
     @Column(name = "capacity_modifier")
-    val capacityModifier: Int? = null,
+    val capacityModifier: Double? = null,
 
     @Enumerated(EnumType.STRING)
     val status: SessionStatus = SessionStatus.ACTIVE

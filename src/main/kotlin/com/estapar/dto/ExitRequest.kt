@@ -10,9 +10,9 @@ import java.time.Instant
 @Introspected
 data class ExitRequest(
     @field:JsonProperty("license_plate")
-    val licensePlate: String?,
+    val licensePlate: String,
     @field:JsonProperty("exit_time")
-    val exitTime: String?,
+    val exitTime: String,
     @field:JsonProperty("event_type")
     val eventType: String
 ) : EventRequest

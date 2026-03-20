@@ -43,6 +43,16 @@ class GarageServiceTest {
     }
 
     @Test
+    fun `getRevenue should return bad request when date is in an incorrect format`() {
+        val request = RevenueRequest("invalid date format", "A")
+        val result = garageService.getRevenue(request)
+
+        assertNotNull(result)
+        assertEquals(HttpStatus.BAD_REQUEST, result.status)
+        assertEquals("Invalid date format", result.body())
+    }
+
+    @Test
     fun `getRevenue should return no content when there is no payment data for the given date and sector`() {
         val startDate = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC)
         val endDate = LocalDate.now().plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC)

@@ -27,8 +27,7 @@ class WebhookController (
         return when(request) {
             is EntryRequest -> vehicleEntryService.processVehicleEntry(request)
             is ParkingRequest -> vehicleParkingService.processVehicleParking(request)
-            is ExitRequest -> vehicleExitService.processVehicleExit(request)
-            else -> HttpResponse.badRequest(WebhookResponse(error = "Unknown event type"))
+            else -> vehicleExitService.processVehicleExit(request as ExitRequest)
         }
     }
 

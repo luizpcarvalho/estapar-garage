@@ -8,7 +8,7 @@ import io.micronaut.serde.annotation.Serdeable
 @Introspected
 data class RevenueRequest(
     @field:QueryValue("date")
-    val date: String?,
+    val date: String,
     @field:QueryValue("sector")
-    val sector: String?,
+    val sector: String,
 )
